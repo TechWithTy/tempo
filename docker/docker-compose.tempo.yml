@@ -1,0 +1,34 @@
+services:
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    restart: unless-stopped
+    environment:
+      - TEMPO_EXPORTER_ENDPOINT=${TEMPO_EXPORTER_ENDPOINT:-tempo:4317}
+      - TEMPO_CA_FILE=${TEMPO_CA_FILE}
+      - TEMPO_CERT_FILE=${TEMPO_CERT_FILE}
+      - TEMPO_KEY_FILE=${TEMPO_KEY_FILE}
+      - TEMPO_SKIP_VERIFY=${TEMPO_SKIP_VERIFY}
+      - TEMPO_USERNAME=${TEMPO_USERNAME}
+      - TEMPO_PASSWORD=${TEMPO_PASSWORD}
+      - TEMPO_BEARER_TOKEN=${TEMPO_BEARER_TOKEN}
+    ports:
+      - "3200:3200" # Tempo UI/API
+      - "14317:4317" # OTLP gRPC (host 14317 -> container 4317, avoids conflict)
+      - "14318:4318" # OTLP HTTP (host 14318 -> container 4318, avoids conflict)
+    volumes:
+      - "C:/Users/tyriq/Documents/Github/lead_ignite_backend_3.0/backend/app/core/tempo/docker/tempo-config.example.yaml:/etc/tempo/tempo.yaml:ro"
+    command: -config.file=/etc/tempo/tempo.yaml
+    profiles: ["tempo"]
+    networks:
+      - default
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3200/metrics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    external: true
