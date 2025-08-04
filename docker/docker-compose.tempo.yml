@@ -17,7 +17,7 @@ services:
       - "14317:4317" # OTLP gRPC (host 14317 -> container 4317, avoids conflict)
       - "14318:4318" # OTLP HTTP (host 14318 -> container 4318, avoids conflict)
     volumes:
-      - "C:/Users/tyriq/Documents/Github/lead_ignite_backend_3.0/backend/app/core/tempo/docker/tempo-config.example.yaml:/etc/tempo/tempo.yaml:ro"
+      - "./tempo-config.yaml:/etc/tempo/tempo.yaml:ro"
     command: -config.file=/etc/tempo/tempo.yaml
     profiles: ["tempo"]
     networks:
